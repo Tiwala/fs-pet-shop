@@ -42,7 +42,7 @@ function read(data) {
                 console.log('Usage: node pets.js read INDEX')
             }
         } else {
-        console.log(data, 'data')
+        console.log(data)
     }
 }
 
