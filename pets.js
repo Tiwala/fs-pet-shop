@@ -17,8 +17,14 @@ fs.readFile('pets.JSON', 'utf-8', (err, str) => {
             create(data);
             break;
         }
-        case 'update':
-        case 'destroy':
+        case 'update': {
+            update(data);
+            break;
+        }
+        case 'destroy': {
+            destroy(data);
+            break;
+        }
         default: {
             console.error('Usage: node pets.js [read | create | update | destroy]');
             //exits
@@ -52,9 +58,46 @@ function create(data) {
     data.push(newPet);
     fs.writeFile('pets.json', JSON.stringify(data), (err) => {
         if (err) {
-            console.error('error');
+            console.error('Usage: node pets.js create AGE KIND NAME');
         } else {
             console.log(newPet)
         }
     })
+}
+
+function update(data) {
+    let index = process.argv[3];
+    let petAge = process.argv[4];
+    let petKind = process.argv[5];
+    let petName = process.argv[6];
+    if (data[index] != undefined) {
+        data[index].age = Number(petAge);
+        data[index].kind = petKind;
+        data[index].name = petName;
+        fs.writeFile('pets.json', JSON.stringify(data), (err) => {
+            if (err) {
+                console.error('Usage: node pets.js update INDEX AGE KIND NAME')
+            } else {
+                console.log(data[index]);
+            }
+        })
+    } else {
+        console.error('Usage: node pets.js update INDEX AGE KIND NAME')
+    }
+}
+
+function destroy(data) {
+    let index = process.argv[3];
+    if (data[index] != undefined) {
+        data.splice(index, 1);
+        fs.writeFile('pets.json', JSON.stringify(data), (err) => {
+            if (err) {
+                console.error('Usage: node pets.js destroy INDEX');
+            } else {
+                console.log(data);
+            }
+        })
+    } else {
+        console.error('Usage: node pets.js destroy INDEX');
+    }
 }
