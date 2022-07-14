@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import fs from 'fs';
 
 const subcommand = process.argv[2];
@@ -89,6 +91,7 @@ function update(data) {
 function destroy(data) {
     let index = process.argv[3];
     if (data[index] != undefined) {
+        console.log(data.splice(index, 1));
         data.splice(index, 1);
         fs.writeFile('pets.json', JSON.stringify(data), (err) => {
             if (err) {
