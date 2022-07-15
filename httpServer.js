@@ -2,7 +2,6 @@
 import http from "http";
 import fs from "fs";
 
-
 // creates the server
 const server = http.createServer((req, res) => {
     const url = new URL('http://localhost:6969' + req.url);
