@@ -8,9 +8,6 @@ import { readPetsFile } from "./shared.js"
 
 const app = express();
 const PORT = 6969;
-
-
-
 const errorHandler = (err, req, res, next) => {
     if (err) {
     res.status(400).send('Error!');
@@ -21,7 +18,34 @@ const errorHandler = (err, req, res, next) => {
 app.use(express.json());
 
 // Just calling the full pets object
-app.get("/pets", (req, res) => {
+app.get("/pets", (req, res, next) => {
+    getPets(req, res, next);
+})
+
+// calling specific index of pet
+app.get("/pets/:index", (req, res, next) => {
+    getPetsIndex(req, res, next);
+})
+
+app.post("/pets", (req, res, next) => {
+    postNewPets(req, res, next);
+})
+
+
+app.use(errorHandler);
+
+app.listen(PORT, () => {
+    console.log(`server started on port ${PORT}`);
+});
+
+
+
+
+
+
+//functions
+
+function getPets(req, res, next) {
     fs.readFile("pets.json", "utf-8", (err, str) => {
         if (err) {
             next(err);
@@ -29,10 +53,9 @@ app.get("/pets", (req, res) => {
             res.send(str);
         }
     })
-})
+}
 
-// calling specific index of pet
-app.get("/pets/:index", (req, res, next) => {
+function getPetsIndex(req, res, next) {
     fs.readFile("pets.json", "utf-8", (err, str) => {
         const data = JSON.parse(str);
         const index = req.params.index;
@@ -42,14 +65,15 @@ app.get("/pets/:index", (req, res, next) => {
             res.status(404);
             res.send(`Invalid index given: ${index}`);
         } else {
-            res.send(data[index])
+            res.send(data[index]);
         }
     })
-})
+}
 
-app.post("/pets", (req, res, next) => {
+function postNewPets(req, res, next) {
     res.json(req.body)
     const newPet = req.body;
+    newPet.age = Number(newPet.age);
     fs.readFile("pets.json", "utf-8", (err, str) => {
         const data = JSON.parse(str);
         if (err) {
@@ -65,11 +89,4 @@ app.post("/pets", (req, res, next) => {
             })
         }
     })
-})
-
-
-app.use(errorHandler);
-
-app.listen(PORT, () => {
-    console.log(`server started on port ${PORT}`);
-});
+}
