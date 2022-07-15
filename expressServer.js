@@ -10,7 +10,7 @@ const app = express();
 const PORT = 6969;
 const errorHandler = (err, req, res, next) => {
     if (err) {
-    res.status(400).send('Error!');
+    res.status(500).send('Error!');
     }
 }
 
