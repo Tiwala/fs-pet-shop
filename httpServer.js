@@ -72,6 +72,9 @@ function postNewPets(req, res) {
     });
     req.on('end', () => {
         const newPet = JSON.parse(body);
+        console.log(newPet);
+        newPet.age = Number(newPet.age);
+        console.log(newPet.age);
         fs.readFile('pets.JSON', 'utf-8', (err, str) => {
             if (err) {
                 console.error('Error');
