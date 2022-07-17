@@ -71,22 +71,30 @@ function getPetsIndex(req, res, next) {
 }
 
 function postNewPets(req, res, next) {
-    res.json(req.body)
     const newPet = req.body;
     newPet.age = Number(newPet.age);
-    fs.readFile("pets.json", "utf-8", (err, str) => {
+    console.log(newPet);
+    console.log(newPet.age);
+    if (isNaN(newPet.age) || newPet.age === '' || newPet.kind === '' || newPet.name === '') {
+        res.status(400)
+        res.send("Bad Request");
+    } 
+    else {
+        fs.readFile("pets.json", "utf-8", (err, str) => {
         const data = JSON.parse(str);
         if (err) {
-            next(err);
-        } else {
-            data.push(newPet);
-            fs.writeFile("pets.json", JSON.stringify(data), (err) => {
-                if (err) {
-                    next(err);
-                } else {
-                    JSON.stringify(newPet);
-                }
-            })
-        }
-    })
+                next(err);
+            } else {
+                data.push(newPet);
+                fs.writeFile("pets.json", JSON.stringify(data), (err) => {
+                    if (err) {
+                        next(err);
+                    } else {
+                        // JSON.stringify(newPet);
+                        res.json(newPet);
+                    }
+                })
+            }
+        })
+    }
 }
