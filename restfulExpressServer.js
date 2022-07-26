@@ -88,6 +88,7 @@ function getPetsIndex(req, res, next) {
         const data = JSON.parse(str);
         // req.params calls an object that contains everything in the parameter that starts with :
         const index = req.params.index;
+        console.log(index);
         if (err) {
             return next(err);
         } else if (data[index] === undefined) {
@@ -144,6 +145,9 @@ function petPatch(req, res, next) {
             const patchedPet = data[index];
             if (err) {
                 next(err);
+            } else if (patchedPet === undefined){
+                res.status(404);
+                res.send(`Invalid index given: ${index}`)
             } else {
                 if (newAge) {
                     patchedPet.age = newAge;
