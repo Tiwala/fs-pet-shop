@@ -45,6 +45,16 @@ app.post("/pets", (req, res, next) => {
     postNewPets(req, res, next);
 })
 
+// Not done; replaces the entire object instead of only replacing specific key/value pair
+app.patch("/pets/:index", (req, res, next)=> {
+    petPatch(req, res, next);
+})
+
+// Works
+app.delete("/pets/:index", (req, res, next) => {
+    deletePet(req, res, next);
+})
+
 app.use(unknownHTTP);
 
 // Calls the errorhandler
@@ -117,3 +127,69 @@ function postNewPets(req, res, next) {
         })
     }
 }
+
+function petPatch(req, res, next) {
+    const index = req.params.index;
+    const newPet = req.body;
+    const newAge = newPet.age;
+    const newName = newPet.name;
+    const newKind = newPet.kind;
+    newPet.age = Number(newPet.age);
+    if (isNaN(newPet.age) || newPet.age === '' || newPet.kind === '' || newPet.name === '') {
+        res.status(400)
+        res.send("Bad Request");
+    } else {
+        fs.readFile("pets.json", "utf-8", (err, str) => {
+            const data = JSON.parse(str);
+            const patchedPet = data[index];
+            if (err) {
+                next(err);
+            } else {
+                if (newAge) {
+                    patchedPet.age = newAge;
+                }
+                if (newName) {
+                    patchedPet.name = newName;
+                }
+                if (newKind) {
+                    patchedPet.kind = newKind;
+                }
+                fs.writeFile("pets.json", JSON.stringify(data), (err) => {
+                    if (err) {
+                        return next(err);
+                    } else {
+                        res.send(patchedPet);
+                    }
+                })
+            }
+        })
+    }
+}
+
+function deletePet(req, res, next) {
+    const index = req.params.index;
+    fs.readFile("pets.json", "utf-8", (err, str) => {
+        const data = JSON.parse(str);
+        if (err) {
+            next(err);
+        } else {
+            const deletedPet = data[index];
+            data.splice(index, 1);
+            fs.writeFile("pets.json", JSON.stringify(data), (err) => {
+                if (err) {
+                    return next(err);
+                } else {
+                    res.send(deletedPet);
+                }
+            })
+        }
+    })
+}
+
+//scratch
+
+// let scratch = {
+//     "trash": 1,
+//     "poop": poopie
+// }
+
